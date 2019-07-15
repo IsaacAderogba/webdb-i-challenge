@@ -1,11 +1,15 @@
-const db = require('../dbConfig');
+const db = require("../dbConfig");
 
 module.exports = {
   get: function() {
-    console.log('Called');
+    console.log("Called");
   },
-  insert: function({name, budget}) {
-    console.log('executed');
-    return db("accounts").insert({name, budget});
+  getAccountById: function(id) {
+    return db("accounts").where({ id });
+  },
+  insert: function({ name, budget }) {
+    return db("accounts")
+      .insert({ name, budget })
+      .then(([id]) => this.getAccountById(id));
   }
-}
+};
