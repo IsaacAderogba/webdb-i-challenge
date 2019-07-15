@@ -15,7 +15,7 @@ router.get("/:id", validateId, async (req, res, next) => {
   }
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", validateBody, async (req, res, next) => {
   const { name, budget } = req.body;
 
   try {
@@ -27,7 +27,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.put("/:id", validateId, (req, res) => {
+router.put("/:id", validateId, validateBody, (req, res) => {
   res.json("/api/accounts/put");
 });
 
@@ -58,5 +58,16 @@ async function validateId(req, res, next) {
 }
 
 // validateBody middleware
+function validateBody(req, res, next) {
+  const { name, budget } = req.body;
+
+  if (Object.keys(req.body).length === 0)
+    res.status(400).json({ message: "Missing account data" });
+  if (!name || !budget)
+    res.status(400).json({ message: "Missing required name or budget data" });
+
+  req.newAccount = { name, budget };
+  next();
+}
 
 module.exports = router;
