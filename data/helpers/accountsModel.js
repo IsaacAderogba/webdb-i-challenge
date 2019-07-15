@@ -1,8 +1,10 @@
 const db = require("../dbConfig");
 
 module.exports = {
-  get: function() {
-    return db("accounts");
+  get: function(limit, sortby, sortdir) {
+    return db("accounts")
+      .orderBy(sortby || "id", sortdir || "asc")
+      .limit(limit || "25");
   },
   getAccountById: function(id) {
     return db("accounts")

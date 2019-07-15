@@ -5,7 +5,8 @@ const router = express.Router();
 
 router.get("/", async (req, res, next) => {
   try {
-    const accounts = await Accounts.get();
+    const {limit, sortby, sortdir} = req.query;
+    const accounts = await Accounts.get(limit, sortby, sortdir);
     res.status(200).json(accounts);
   } catch (err) {
     next(err);
