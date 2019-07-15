@@ -4,7 +4,6 @@ const Accounts = require("../data/helpers/accountsModel");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  Accounts.get();
   res.json("/api/accounts/get")
 });
 
@@ -12,8 +11,16 @@ router.get("/:id", (req, res) => {
   res.json("/api/accounts/get/:id")
 });
 
-router.post("/", (req, res) => {
-  res.json("/api/accounts/post")
+router.post("/", async (req, res, next) => {
+  const { name, budget, } = req.body;
+
+  try {
+    const status = await Accounts.insert({name, budget});
+
+    res.status(201).json(status);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.put("/:id", (req, res) => {
