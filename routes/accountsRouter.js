@@ -3,8 +3,13 @@ const Accounts = require("../data/helpers/accountsModel");
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  res.json("/api/accounts/get");
+router.get("/", async (req, res, next) => {
+  try {
+    const accounts = await Accounts.get();
+    res.status(200).json(accounts);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.get("/:id", validateId, async (req, res, next) => {
@@ -16,10 +21,8 @@ router.get("/:id", validateId, async (req, res, next) => {
 });
 
 router.post("/", validateBody, async (req, res, next) => {
-  const { name, budget } = req.body;
-
   try {
-    const createdAccount = await Accounts.insert({ name, budget });
+    const createdAccount = await Accounts.insert(req.newAccount);
 
     res.status(201).json(createdAccount);
   } catch (err) {
@@ -27,8 +30,13 @@ router.post("/", validateBody, async (req, res, next) => {
   }
 });
 
-router.put("/:id", validateId, validateBody, (req, res) => {
-  res.json("/api/accounts/put");
+router.put("/:id", validateId, validateBody, async (req, res, next) => {
+  try {
+    const updatedAccount = await Accounts.update(req.params.id, req.newAccount);
+    res.status(200).json(updatedAccount);
+  } catch (err) {
+    next(err);
+  }
 });
 
 router.delete("/:id", validateId, (req, res) => {
@@ -63,8 +71,10 @@ function validateBody(req, res, next) {
 
   if (Object.keys(req.body).length === 0)
     res.status(400).json({ message: "Missing account data" });
-  if (!name || !budget)
-    res.status(400).json({ message: "Missing required name or budget data" });
+  if (!name || !budget || budget < 0)
+    res
+      .status(400)
+      .json({ message: "Missing or incorrect required name or budget data" });
 
   req.newAccount = { name, budget };
   next();
