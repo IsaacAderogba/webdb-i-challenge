@@ -5,7 +5,7 @@ module.exports = {
     console.log("Called");
   },
   getAccountById: function(id) {
-    return db("accounts").where({ id });
+    return db("accounts").where({ id }).first();
   },
   insert: function({ name, budget }) {
     return db("accounts")
