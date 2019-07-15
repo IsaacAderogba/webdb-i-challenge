@@ -39,8 +39,13 @@ router.put("/:id", validateId, validateBody, async (req, res, next) => {
   }
 });
 
-router.delete("/:id", validateId, (req, res) => {
-  res.json("/api/accounts/del");
+router.delete("/:id", validateId, async (req, res, next) => {
+  try {
+    await Accounts.remove(req.params.id);
+    res.status(200).json(req.account);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // validateID middleware
